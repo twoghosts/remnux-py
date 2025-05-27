@@ -1,0 +1,16 @@
+[Unit]
+Description=PolarProxy TLS pcap logger
+After=network.target
+
+[Service]
+SyslogIdentifier=PolarProxy
+Type=simple
+User=proxyuser
+WorkingDirectory=/home/proxyuser/PolarProxy
+ExecStart=/home/proxyuser/PolarProxy/PolarProxy -v -p 10443,80,443 -x /var/log/PolarProxy/polarproxy.cer -f /var/log/PolarProxy/proxyflows.log -o /var/log/PolarProxy/ --certhttp 10080 --socks 1080 --httpconnect 8080 --nontls allow
+ExecReload=/bin/kill -HUP "$MAINPID"
+KillSignal=SIGINT
+FinalKillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

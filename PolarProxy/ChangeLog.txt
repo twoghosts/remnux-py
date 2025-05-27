@@ -1,0 +1,100 @@
+﻿PolarProxy 1.0.2
+* Fixed bug that prevented --nosni from working properly in TLS termination proxy mode. Thanks to msmnmy for reporting this issue on superuser.com!
+* Added target_port match type to rulesets
+
+PolarProxy 1.0.1
+* Upgraded from .NET 6 to .NET 8
+* Upgraded System.Security.Cryptography.Xml from version 4.5 to 9.0
+* Improved resiliency of PCAP-over-IP listener. One broken session doesn't cause the PCAP-over-IP service to close.
+* Added JA4 fingerprints to flow log (-f <file>)
+* Added support for decrypt_fail_errorcode rules that match on specific error codes from authentication failures
+* Added support for ruleset reload through SIGHUP
+
+PolarProxy 1.0.0
+* Changed PCAP output format from big-endian to little-endian 
+* Reduced memory usage of PCAP logger
+* Modified proxy logic to support also protocols where the server sends the first data, like FTP or SSH. Only works when "--nontls allow" is used and only in SOCKS or HAProxy modes.
+* Improved handling of timeouts to avoid zombie sessions and tasks
+* Improved ALPN logic for connections without SNI when --nosni is used. The client side ALPN is now mirrored by that of the server side.
+* Fixed bug in "--cacert load" where leaf certs previously got incorrect Authority Key Identifier (AKI) X509v3 extension values if the root cert had an AKI. Thanks to Kevin Cook for reporting this bug!
+* Fixed bug in HAProxy that caused PolarProxy to not see all proxied data from the client. Thanks to Isak Asp for reporting this bug!
+* Added client's real IP and port (as reporeted by HAProxy) to decrypted PCAP for HAProxy connections. Thanks to Jereme Corrado for the heads up about the missing info.
+* Added pcapoveripprivate, which only provides decrypted packets to/from the connecting client's own IP address.
+* Added support for ruleset to run PolarProxy as a TLS firewall.
+* Added support for setting bandwidth threshold in rule actions
+* Splitted -v logging into -v (verbose) and -d (debug)
+
+PolarProxy 0.9.10
+* Improved error handling and error logging
+* More reliable detection of certificate rejects by client for --bypassonfail
+
+PolarProxy 0.9.9
+* Modified and re-grouped command line arguments to use more logical names
+* Added --leafcert noclone argument to force PolarProxy to always create new certificates
+  for the requested SNI
+* Added --notls argument to support forwarding of non-TLS traffic to a specified host
+* Added --redirect option to redirect TLS connections for some domains
+
+PolarProxy 0.9.8
+* Added --timeout <seconds> argument to set TCP connection timout
+* Added --bypassonfail argument to enable decryption bypass (fail-open) when
+  failed connections have been observed for a particular client and server.
+* Fewer error messages when -v isn't used
+
+PolarProxy 0.9.0
+ * Added support for SOCKS proxy (versions 4, 4a, 5 and 5h supported)
+ * Added support for HTTP CONNECT proxy
+ * Implemented automatic TLS detection for SOCKS and HTTP CONNECT proxy
+ * Added Windows binary build
+
+PolarProxy 0.8.16
+ * Added "--bypassexact <file>" to bypass/disable decryption for specific domains.
+   Decryption is disabled only for domains that exactly match a line in <file>.
+ * Removed default value for "--outputdir" so that decrypted PCAP is not logged to disk
+   unless -w <file> or -o <directory> is specified.
+ * Added "--autoflush <seconds>" to allow buffered PCAP data and flow logs to be flushed
+   to disk automatically on a regular interval.
+ * Added "--pcapoveripconnect" to connect to a PCAP-over-IP listener and send
+   a PCAP stream over TCP. Thanks to Andy Wick (of Moloch/Arkime fame) for the suggestion!
+ * Added "--clientcert" option to allow client authentication using mTLS on outgoing
+   connections from PolarProxy. Thanks to Peter Lambrechtsen for the idea!
+ * Added "KillSignal=SIGINT" and "FinalKillSignal=SIGTERM" in PolarProxy.service to handle
+   flushing of buffered pcap data better on systemctl stop and restart.
+   Thanks to Mustafa Cantürk for reporting the issue!
+ * Improved handling of license keys.
+
+PolarProxy 0.8.15
+ * Fixed server certificate selection bug.
+
+PolarProxy 0.8.14
+ * Added support for loading server certificates (aka leaf certificates) with --servercert
+   This feature can be used in combination with --terminate and --connect to use PolarProxy
+   as a TLS termination proxy.
+
+PolarProxy 0.8.13
+ * Added correct IPv4 checksums to PCAP data.
+
+PolarProxy 0.8.12
+ * Reduced default TCP MSS from 1500 to 1420 to get a smaller MTU.
+ * Added --mss option to allow manual configuration of MSS and MTU
+
+PolarProxy 0.8.11
+ * Added --terminate option to support running PolarProxy as a TLS termination proxy
+
+PolarProxy 0.8.9
+ * Added "--connect <host>" switch in order to put PolarProxy in front of another proxy.
+   Thanks to @MaliciousDelish for the feature request!* More descriptive error messages when TCP connections fail.
+* Replaced --allownontls with --nontls allow, which was also extended with "forward"
+  and "encrypt" actions
+
+PolarProxy 0.9.7
+ * Added support for HAProxy PROXY protocol v1 (send-proxy) with --haproxy
+ * Fixed Subject Alternative Name issue in --terminate mode, where value accidentally
+   got set to "DNS Name=CN={DOMAIN}" instead of "DNS Name={DOMAIN}".
+   Thanks to AlMo for reporting the bug.
+
+PolarProxy 0.9.6
+ * Relaxed certificate validation procedure for "client styled auth" to avoid
+   unnessasary re-connection attempts with "safe SSL auth".
+ * Improved impersonation of self-signed certificates
+ * Improved --help documentation
